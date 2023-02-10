@@ -92,14 +92,74 @@ def plot_Lili(data):
         # Plot both charts
         st.altair_chart(circles + lines, theme="streamlit", use_container_width=True)
 
+def aleksandra_plot():
+    df = pd.read_csv('SM_Survey_UPSA-2020_clean.csv')
+    st.header("Academic performance, GPA, and 4 related social media usage metrics :tada:")
+    st.subheader("By Genders")
+    fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(ncols=2,nrows=2, figsize=(10, 6)) #, figsize=(10, 10)
+ 
+    sns.lineplot(ax=ax1, data=df, x="Time", y="GPA", hue="Gender",style="Gender")
+    sns.lineplot(ax=ax2, data=df, x="Groups", y="GPA", hue="Gender",style="Gender")
+    ax1.set_title("Time vs GPA")
+    ax1.set_xlim(1,5)
+    ax1.set_ylim(1,4)
+    ax1.legend(loc=3, prop={'size': 6})
+    ax2.set_title("Groups vs GPA")
+    ax2.set_xlim(0,6)
+    ax2.set_ylim(1,4)
+    ax2.legend(loc=3, prop={'size': 6})
 
+    sns.lineplot(ax=ax3, data=df, x="Friends", y="GPA", hue="Gender",style="Gender")
+    sns.lineplot(ax=ax4, data=df, x="Notifications", y="GPA", hue="Gender",style="Gender")
+    ax3.set_title("Friends vs GPA")
+    ax3.set_xlim(1000,4000)
+    ax3.set_ylim(1,4)
+    ax3.legend(loc=3, prop={'size': 6})
+    ax4.set_xlim(5,50)
+    ax4.set_ylim(1,4)
+    ax4.legend(loc=3, prop={'size': 6})
+    ax4.set_title("Notifications vs GPA")
+
+    fig.set_tight_layout(True)
+    st.pyplot(fig)
+
+    st.subheader("By Age groups")
+
+    fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(ncols=2,nrows=2, figsize=(10, 6)) #, figsize=(10, 10)
+    
+    sns.lineplot(ax=ax1, data=df, x="Time", y="GPA", hue="Age Group", style="Age Group")
+    sns.lineplot(ax=ax2, data=df, x="Groups", y="GPA", hue="Age Group",style="Age Group")
+    ax1.set_title("Time vs GPA")
+    ax1.set_xlim(1,5)
+    ax1.set_ylim(1,4)
+    ax1.legend(loc=3, prop={'size': 6})
+    ax2.set_title("Groups vs GPA")
+    ax2.set_xlim(0,6)
+    ax2.set_ylim(1,4)
+    ax2.legend(loc=3, prop={'size': 6})
+
+    sns.lineplot(ax=ax3, data=df, x="Friends", y="GPA", hue="Age Group",style="Age Group")
+    sns.lineplot(ax=ax4, data=df, x="Notifications", y="GPA", hue="Age Group",style="Age Group")
+    ax3.set_title("Friends vs GPA")
+    ax3.set_xlim(1000,4000)
+    ax3.set_ylim(1,4)
+    ax3.legend(loc=3, prop={'size': 6})
+    ax4.set_xlim(5,50)
+    ax4.set_ylim(1,4)
+    ax4.legend(loc=3, prop={'size': 6})
+    ax4.set_title("Notifications vs GPA")
+
+    fig.set_tight_layout(True)
+    return fig
 
 def main():
     st.set_page_config(page_title="Procrasti-vision",
                   page_icon=":guardsman:",
                   layout="wide")
     data = load_data(r'SM_Survey_UPSA-2020.csv')
-    selected_tab = st.sidebar.radio("Menu", ["Description","Distribution plots", "Gender pie plots", "Scatter plot variation", ])
+    # selected_tab = st.sidebar.radio("Menu", ["Description","Distribution plots", "Gender pie plots", "Scatter plot variation", ])
+    selected_tab = st.sidebar.radio("Menu", ["Description","Distribution plots", "Scatter plot variation", "Evolution Plots"])
+   
     if selected_tab == "Distribution plots":
         st.sidebar.header("Settings")
         gpa_threshold = st.sidebar.slider("GPA Threshold", 0.0, 4.0, 2.5)
@@ -109,14 +169,18 @@ def main():
         st.write("Displaying social media usage distributions for students with GPA higher and lower than the threshold")
         f = plot_distributions(data, gpa_threshold, x_cols, y_col)
         st.pyplot(f)
-    elif selected_tab == "Gender pie plots":
-        st.sidebar.header("Settings")
-        gpa_threshold = st.sidebar.slider("GPA Threshold", 0.0, 4.0, 2.5)
-        g = plot_gender_distribution(data, gpa_threshold)
-        st.pyplot(g)
+    # elif selected_tab == "Gender pie plots":
+    #     st.sidebar.header("Settings")
+    #     gpa_threshold = st.sidebar.slider("GPA Threshold", 0.0, 4.0, 2.5)
+    #     g = plot_gender_distribution(data, gpa_threshold)
+    #     st.pyplot(g)
     elif selected_tab == "Scatter plot variation":
         st.sidebar.header("Settings")
         plot_Lili(data)
+    elif selected_tab == 'Evolution Plots':
+        f = aleksandra_plot()
+        st.pyplot(f)
+
     elif selected_tab == 'Description':
 
             st.markdown("""
@@ -141,6 +205,7 @@ def main():
                     **WHY** we the audience should care about it: while striving for performance one needs to decrease the potential non productive time.
 
                     """)
+        
 
         
 
