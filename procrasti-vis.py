@@ -12,6 +12,7 @@ def load_data(file_path):
     return pd.read_csv(file_path)
 
 def plot_distributions(data, gpa_threshold, x_cols, y_col=None):
+    st.markdown("How to read the visualisation : The plots shown below are kernel density plots, the line in the middle indicated the mean value for the corresponding group of people. Plots in green correspond to the group of people having a GPA over a certain threshold that can be modified using the slider in the sidebar. A selector is also available to choose features of the dataset to display.")
     sns.set_style("darkgrid")
 
     high_gpa = data[data["GPA"] >= gpa_threshold]
@@ -53,26 +54,8 @@ def plot_gender_distribution(data, gpa_threshold):
 
     return f
 
-def main():
-    st.set_page_config(page_title="Procrasti-vision",
-                  page_icon=":guardsman:",
-                  layout="wide")
-    data = load_data(r'SM_Survey_UPSA-2020.csv')
-    selected_tab = st.sidebar.radio("Plots", ["Description","Distribution plots", "Gender pie plots", "Lili", ])
-    st.sidebar.header("Settings")
-    gpa_threshold = st.sidebar.slider("GPA Threshold", 0.0, 4.0, 2.5)
-    if selected_tab == "Distribution plots":
-
-        x_cols = st.sidebar.multiselect("X Axes", data.columns, default=["Time", "Friends"])
-        y_col = None
-        st.write("Displaying social media usage distributions for students with GPA higher and lower than the threshold")
-        f = plot_distributions(data, gpa_threshold, x_cols, y_col)
-        st.pyplot(f)
-    elif selected_tab == "Gender pie plots":
-        g = plot_gender_distribution(data, gpa_threshold)
-        st.pyplot(g)
-    elif selected_tab == "Lili":
-        st.markdown("## Correlation between social media usage and grades")   ## Main Title
+def plot_Lili(data): 
+        st.markdown("## Correlation between social media usage and grades \n - How to read the visualization: The visualization represent the grade point average (GPA) of students according to their genders and social media usage metrics. You can choose between the 4 metrics described previously. We can see what is the correlation (if there is one) between the chosen metric and the GPA of students (their academic performance).")   ## Main Title
         ##############################
         st.sidebar.markdown("### Scatter Chart - Select a variable:")
 
@@ -109,6 +92,29 @@ def main():
         )
         # Plot both charts
         st.altair_chart(circles + lines, theme="streamlit", use_container_width=True)
+
+
+
+def main():
+    st.set_page_config(page_title="Procrasti-vision",
+                  page_icon=":guardsman:",
+                  layout="wide")
+    data = load_data(r'SM_Survey_UPSA-2020.csv')
+    selected_tab = st.sidebar.radio("Plots", ["Description","Distribution plots", "Gender pie plots", "Lili", ])
+    st.sidebar.header("Settings")
+    gpa_threshold = st.sidebar.slider("GPA Threshold", 0.0, 4.0, 2.5)
+    if selected_tab == "Distribution plots":
+
+        x_cols = st.sidebar.multiselect("X Axes", data.columns, default=["Time", "Friends"])
+        y_col = None
+        st.write("Displaying social media usage distributions for students with GPA higher and lower than the threshold")
+        f = plot_distributions(data, gpa_threshold, x_cols, y_col)
+        st.pyplot(f)
+    elif selected_tab == "Gender pie plots":
+        g = plot_gender_distribution(data, gpa_threshold)
+        st.pyplot(g)
+    elif selected_tab == "Lili":
+       plot_Lili(data)
     elif selected_tab == 'Description':
 
             st.markdown("""
@@ -131,8 +137,6 @@ def main():
                     **WHO** the visualization is for: parents, teachers and students.
 
                     **WHY** we the audience should care about it: while striving for performance one needs to decrease the potential non productive time.
-
-                    **HOW** to read the visualization.
 
                     """)
 
