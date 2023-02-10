@@ -23,13 +23,13 @@ def plot_distributions(data, gpa_threshold, x_cols, y_col=None):
     for i, x_col in enumerate(x_cols):
         sns.kdeplot(high_gpa[x_col], ax=ax[0][i], color="g")
         ax[0][i].axvline(high_gpa[x_col].mean(), color="g", linestyle="dashed", linewidth=2)
-        ax[0][i].set_title("High GPA Students")
+        ax[0][i].set_title("Students with GPA over " + gpa_threshold)
         ax[0][i].set_xlabel(x_col)
         ax[0][i].set_ylabel("Density")
 
         sns.kdeplot(low_gpa[x_col], ax=ax[1][i], color="r")
         ax[1][i].axvline(low_gpa[x_col].mean(), color="r", linestyle="dashed", linewidth=2)
-        ax[1][i].set_title("Low GPA Students")
+        ax[1][i].set_title("Students with GPA under " + gpa_threshold)
         ax[1][i].set_xlabel(x_col)
         ax[1][i].set_ylabel("Density")
 
@@ -46,10 +46,10 @@ def plot_gender_distribution(data, gpa_threshold):
     f, ax = plt.subplots(1, 2, figsize=(10, 5))
 
     high_gpa_counts.plot.pie(ax=ax[0], autopct="%.1f%%")
-    ax[0].set_title("High GPA Students")
+    ax[0].set_title("Students with GPA over " + gpa_threshold)
 
     low_gpa_counts.plot.pie(ax=ax[1], autopct="%.1f%%")
-    ax[1].set_title("Low GPA Students")
+    ax[1].set_title("Students with GPA under " + gpa_threshold)
 
     return f
 
@@ -58,7 +58,7 @@ def main():
                   page_icon=":guardsman:",
                   layout="wide")
     data = load_data(r'SM_Survey_UPSA-2020.csv')
-    selected_tab = st.sidebar.radio("Plots", ["Distribution plots", "Gender pie plots"])
+    selected_tab = st.sidebar.radio("Plots", ["Distribution plots", "Gender pie plots", "Lili"])
     st.sidebar.header("Settings")
     gpa_threshold = st.sidebar.slider("GPA Threshold", 0.0, 4.0, 2.5)
     if selected_tab == "Distribution plots":
@@ -72,12 +72,7 @@ def main():
         g = plot_gender_distribution(data, gpa_threshold)
         st.pyplot(g)
     elif selected_tab == "Lili":
-        st.set_page_config(layout="wide")
-
         st.markdown("## Correlation between social media usage and grades")   ## Main Title
-
-
-
         ##############################
         st.sidebar.markdown("### Scatter Chart - Select a variable:")
 
