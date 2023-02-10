@@ -100,10 +100,10 @@ def main():
                   page_icon=":guardsman:",
                   layout="wide")
     data = load_data(r'SM_Survey_UPSA-2020.csv')
-    selected_tab = st.sidebar.radio("Plots", ["Description","Distribution plots", "Gender pie plots", "Lili", ])
-    st.sidebar.header("Settings")
-    gpa_threshold = st.sidebar.slider("GPA Threshold", 0.0, 4.0, 2.5)
+    selected_tab = st.sidebar.radio("Menu", ["Description","Distribution plots", "Gender pie plots", "Scatter plot variation", ])
     if selected_tab == "Distribution plots":
+        st.sidebar.header("Settings")
+        gpa_threshold = st.sidebar.slider("GPA Threshold", 0.0, 4.0, 2.5)
 
         x_cols = st.sidebar.multiselect("X Axes", data.columns, default=["Time", "Friends"])
         y_col = None
@@ -111,10 +111,13 @@ def main():
         f = plot_distributions(data, gpa_threshold, x_cols, y_col)
         st.pyplot(f)
     elif selected_tab == "Gender pie plots":
+        st.sidebar.header("Settings")
+        gpa_threshold = st.sidebar.slider("GPA Threshold", 0.0, 4.0, 2.5)
         g = plot_gender_distribution(data, gpa_threshold)
         st.pyplot(g)
-    elif selected_tab == "Lili":
-       plot_Lili(data)
+    elif selected_tab == "Scatter plot variation":
+        st.sidebar.header("Settings")
+        plot_Lili(data)
     elif selected_tab == 'Description':
 
             st.markdown("""
@@ -139,6 +142,8 @@ def main():
                     **WHY** we the audience should care about it: while striving for performance one needs to decrease the potential non productive time.
 
                     """)
+
+        
 
         
 if __name__ == '__main__':
