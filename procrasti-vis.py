@@ -95,6 +95,7 @@ def plot_Lili(data):
 def aleksandra_plot():
     df = pd.read_csv('SM_Survey_UPSA-2020_clean.csv')
     st.header("Academic performance, GPA, and 4 related social media usage metrics :tada:")
+    st.markdown("- How the user can see the comparison of GPA and 4 related social media usage metrics: Time, Groups, Friends, Notifications by Gender and different Age groups. \n \t For example, one can see that the more students spend time browsing media - the smaller GPA they have.\n \t In addition, in the first part we can observe the differences for males and females, and below we can see the differences for the three age groups.")
     st.subheader("By Genders")
     fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(ncols=2,nrows=2, figsize=(10, 6)) #, figsize=(10, 10)
  
