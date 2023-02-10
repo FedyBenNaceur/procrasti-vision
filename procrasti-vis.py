@@ -57,7 +57,6 @@ def plot_gender_distribution(data, gpa_threshold):
 def plot_Lili(data): 
         st.markdown("## Correlation between social media usage and grades \n - How to read the visualization: The visualization represent the grade point average (GPA) of students according to their genders and social media usage metrics. You can choose between the 4 metrics described previously. We can see what is the correlation (if there is one) between the chosen metric and the GPA of students (their academic performance).")   ## Main Title
         ##############################
-        st.sidebar.markdown("### Scatter Chart - Select a variable:")
 
         # Selector
         measurements = ['Time', 'Notifications', 'Friends', 'Groups']
