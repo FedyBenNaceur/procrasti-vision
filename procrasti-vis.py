@@ -1,8 +1,11 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
-
+import numpy as np
 import seaborn as sns
+import altair as alt
+
+import matplotlib.colors as mcolors
 
 @st.cache
 def load_data(file_path):
@@ -68,6 +71,49 @@ def main():
     elif selected_tab == "Gender pie plots":
         g = plot_gender_distribution(data, gpa_threshold)
         st.pyplot(g)
+    elif selected_tab == "Lili":
+        st.set_page_config(layout="wide")
 
+        st.markdown("## Correlation between social media usage and grades")   ## Main Title
+
+
+
+        ##############################
+        st.sidebar.markdown("### Scatter Chart - Select a variable:")
+
+        # Selector
+        measurements = ['Time', 'Notifications', 'Friends', 'Groups']
+
+        # Names of variables we will use
+        x_axis = 'GPA'
+        y_axis = st.sidebar.selectbox("Y-Axis", measurements, index=measurements.index('Time'))
+
+        # Group by measure given and gender
+        sm_grouped = data.groupby([y_axis, 'Gender']).mean()
+        # Drop gender = 3 (multi index dataframe)
+        sm_grouped = sm_grouped.drop(index=3, level=1).head(15)
+        # Transformes indices to columns
+        source = sm_grouped.reset_index(names=[y_axis, 'Gender'])
+
+        # Gender colors
+        dom = [1, 2]
+        rng = ['lightblue', 'hotpink']
+
+        # Chart of circles
+        circles = alt.Chart(source).mark_circle(size=200).encode(
+            x=alt.X(x_axis, axis=alt.Axis(orient='top')),
+            y=alt.Y(y_axis, scale=alt.Scale(zero=False, padding=1, domain=[min(source[y_axis]),max(source[y_axis])])),
+            color=alt.Color('Gender', scale=alt.Scale(domain=dom, range=rng))
+        ).interactive()
+
+        # Chart of lines
+        lines = alt.Chart(source).mark_line().encode(
+            x=x_axis,
+            y=y_axis,
+            detail=y_axis
+        )
+
+        # Plot both charts
+        st.altair_chart(circles + lines, theme="streamlit", use_container_width=True)
 if __name__ == '__main__':
     main()
