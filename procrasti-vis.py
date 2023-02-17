@@ -72,25 +72,48 @@ def plot_Lili(data):
         # Transformes indices to columns
         source = sm_grouped.reset_index(names=[y_axis, 'Gender'])
 
-        # Gender colors
-        dom = [1, 2]
-        rng = ['lightblue', 'hotpink']
+        source.replace({'Gender': 1}, 'Men', inplace=True)
+        source.replace({'Gender': 2}, 'Women', inplace=True)
 
+        # Gender colors
+        dom = ['Men', 'Women']
+        rng = ['lightblue', 'hotpink']
+        print(source)
         # Chart of circles
         circles = alt.Chart(source).mark_circle(size=200).encode(
             x=alt.X(x_axis, axis=alt.Axis(orient='top')),
-            y=alt.Y(y_axis, scale=alt.Scale(zero=False, padding=1, domain=[min(source[y_axis]),max(source[y_axis])])),
-            color=alt.Color('Gender', scale=alt.Scale(domain=dom, range=rng))
+            y=alt.Y(y_axis, scale=alt.Scale(zero=False, padding=1, domain=[max(source[y_axis]), min(source[y_axis])])),
+            color=alt.Color('Gender', scale=alt.Scale(domain=dom, range=rng), legend=alt.Legend(type="symbol"))
         ).interactive()
 
         # Chart of lines
-        lines = alt.Chart(source).mark_line().encode(
+        gpa_mean = source.groupby(by=[y_axis]).mean()
+
+
+        source_men = source.copy()
+        source_woman = source.copy()
+
+        for index, row in source_men.iterrows():
+            if row['Gender'] == 'Women': # Replace values of women by the mean
+                source_men.at[index,'GPA'] = gpa_mean.loc[int(row[y_axis])]['GPA'] 
+            if row['Gender'] == 'Men':  # Replace values of men by the mean
+                source_woman.at[index,'GPA'] = gpa_mean.loc[int(row[y_axis])]['GPA'] 
+
+        lines_men = alt.Chart(source_men).mark_line().encode(
             x=x_axis,
             y=y_axis,
-            detail=y_axis
+            detail=y_axis,
+            color=alt.value('lightblue')
+        )
+
+        lines_women = alt.Chart(source_woman).mark_line().encode(
+            x=x_axis,
+            y=y_axis,
+            detail=y_axis,
+            color=alt.value('hotpink')
         )
         # Plot both charts
-        st.altair_chart(circles + lines, theme="streamlit", use_container_width=True)
+        st.altair_chart(circles + lines_men + lines_women, theme="streamlit", use_container_width=True)
 
 def aleksandra_plot():
     df = pd.read_csv('SM_Survey_UPSA-2020_clean.csv')
