@@ -60,6 +60,7 @@ def plot_Lili(data):
 
         # Selector
         measurements = ['Time', 'Notifications', 'Friends', 'Groups']
+        units = {'Time': 'Hour(s)', 'Notifications': 'Number', 'Friends': 'Number', 'Groups':'Number'}
 
         # Names of variables we will use
         x_axis = 'GPA'
@@ -82,7 +83,9 @@ def plot_Lili(data):
         # Chart of circles
         circles = alt.Chart(source).mark_circle(size=200).encode(
             x=alt.X(x_axis, axis=alt.Axis(orient='top')),
-            y=alt.Y(y_axis, scale=alt.Scale(zero=False, padding=1, domain=[max(source[y_axis]), min(source[y_axis])])),
+            y=alt.Y(y_axis, 
+                    title = y_axis + '  -  ' + units[y_axis] , 
+                    scale=alt.Scale(zero=False, padding=1, domain=[max(source[y_axis]), min(source[y_axis])])),
             color=alt.Color('Gender', scale=alt.Scale(domain=dom, range=rng), legend=alt.Legend(type="symbol"))
         ).interactive()
 
