@@ -18,24 +18,116 @@ def plot_distributions(data, gpa_threshold, x_cols, y_col=None):
     high_gpa = data[data["GPA"] >= gpa_threshold]
     low_gpa = data[data["GPA"] < gpa_threshold]
 
+   
+
     n = len(x_cols)
     f, ax = plt.subplots(2, n, figsize=(n*5, 10))
 
     for i, x_col in enumerate(x_cols):
+         # Calculate the mean values for each dataset
+        above_mean = high_gpa[x_col].mean()
+        below_mean = low_gpa[x_col].mean()
+
         sns.kdeplot(high_gpa[x_col], ax=ax[0][i], color="g")
-        ax[0][i].axvline(high_gpa[x_col].mean(), color="g", linestyle="dashed", linewidth=2)
+        ax[0][i].axvline(above_meanabove_mean, color="g", linestyle="dashed", linewidth=2)
         ax[0][i].set_title("Students with GPA over " + str(gpa_threshold))
         ax[0][i].set_xlabel(x_col)
         ax[0][i].set_ylabel("Density")
 
         sns.kdeplot(low_gpa[x_col], ax=ax[1][i], color="r")
-        ax[1][i].axvline(low_gpa[x_col].mean(), color="r", linestyle="dashed", linewidth=2)
+        ax[1][i].axvline(below_mean, color="r", linestyle="dashed", linewidth=2)
         ax[1][i].set_title("Students with GPA under " + str(gpa_threshold))
         ax[1][i].set_xlabel(x_col)
         ax[1][i].set_ylabel("Density")
 
     return f
 
+def plot_distributionsInteractive(data, gpa_threshold, x_cols, stuck=True, y_col=None):
+    st.markdown("How to read the visualisation : The plots shown below are kernel density plots, the line in the middle indicated the mean value for the corresponding group of people. Plots in green correspond to the group of people having a GPA over a certain threshold that can be modified using the slider in the sidebar. A selector is also available to choose features of the dataset to display.")
+    
+    # Add a new column indicating whether the value is above or below the threshold
+    data_copied = data.copy()
+    data_copied['group'] = ['above' if x > gpa_threshold else 'below' for x in data_copied['GPA']]
+
+
+    # For every selected column
+    for i, x_col in enumerate(x_cols):
+        # Calculate the mean values for each dataset (above/under)
+        above_threshold = data_copied[data_copied['group'] == 'above']
+        below_threshold = data_copied[data_copied['group'] == 'below']
+
+        above_mean = above_threshold[x_col].mean()
+        below_mean = below_threshold[x_col].mean()
+        
+        if (stuck==False):
+            # Define the density plots using Density Transformers
+            left_density = alt.Chart(above_threshold).transform_density(
+                x_col,
+                as_=[x_col, 'density']
+            ).mark_area(opacity=0.5, color='#98df8a').encode(
+                x=x_col+':Q',
+                y='density:Q',
+                tooltip='density:Q'
+            )
+
+            right_density = alt.Chart(below_threshold).transform_density(
+                x_col,
+                as_=[x_col, 'density']
+            ).mark_area(opacity=0.5, color='#ffbb78').encode(
+                x=x_col+':Q',
+                y='density:Q',
+                tooltip='density:Q'
+            )
+
+            # Add vertical lines for the mean values to each density plot
+            left_mean = alt.Chart(pd.DataFrame({'mean': [above_mean]})).mark_rule(color='red').encode(
+                x='mean:Q'
+            )
+
+            right_mean = alt.Chart(pd.DataFrame({'mean': [below_mean]})).mark_rule(color='red').encode(
+                x='mean:Q'
+            )
+
+            # Combine the two density plots and mean lines side-by-side
+            densities = alt.hconcat(
+                left_density + left_mean,
+                right_density + right_mean,
+                spacing=10
+            )
+            # Render the density plots using Streamlit
+            st.altair_chart(densities, use_container_width=True)
+        else:
+            # Define the density plot using Density Transformers
+            density = alt.Chart(data_copied).transform_density(
+                x_col,
+                groupby=['group'],
+                as_=[x_col, 'density']
+            ).mark_area(opacity=0.5).encode(
+                x=alt.X(x_col+':Q', scale=alt.Scale(zero=False, nice=False)),
+                y=alt.Y('density:Q', scale=alt.Scale(zero=False, nice=False)),
+                color=alt.Color('group:N', scale=alt.Scale(domain=['above', 'below'], range=['#98df8a', '#ffbb78'])),
+                tooltip='density:Q'
+            )
+
+            # Add vertical lines for the mean values to the density plot
+            above_mean_line = alt.Chart(pd.DataFrame({'mean': [above_mean], 'group': ['above']})).mark_rule(color='red').encode(
+                x=alt.X('mean:Q'),
+                color=alt.Color('group:N', scale=alt.Scale(domain=['above', 'below'], range=['#98df8a', '#ffbb78'])),
+            )
+
+            below_mean_line = alt.Chart(pd.DataFrame({'mean': [below_mean], 'group': ['below']})).mark_rule(color='red').encode(
+                x=alt.X('mean:Q'),
+                color=alt.Color('group:N', scale=alt.Scale(domain=['above', 'below'], range=['#98df8a', '#ffbb78'])),
+            )
+
+            # Combine the density plot and mean lines into a single plot
+            plot = (density + above_mean_line + below_mean_line).properties(
+                width=300,
+                height=400,
+                title='Density plot of col'
+            )
+            # Render the plot using Streamlit
+            st.altair_chart(plot, use_container_width=True) 
 
 def plot_gender_distribution(data, gpa_threshold):
     high_gpa = data[data["GPA"] >= gpa_threshold]
@@ -203,6 +295,7 @@ def aleksandra_plot():
     return fig
 
 def main():
+    # Set the background color to a light gray
     st.set_page_config(page_title="Procrasti-vision",
                   page_icon=":guardsman:",
                   layout="wide")
@@ -213,12 +306,12 @@ def main():
     if selected_tab == "Distribution plots":
         st.sidebar.header("Settings")
         gpa_threshold = st.sidebar.slider("GPA Threshold", 0.0, 4.0, 2.5)
-
+        stuck = st.checkbox("Stuck Plots!", value=False, key="switch")
         x_cols = st.sidebar.multiselect("X Axes", data.columns, default=["Time", "Friends"])
         y_col = None
         st.write("Displaying social media usage distributions for students with GPA higher and lower than the threshold")
-        f = plot_distributions(data, gpa_threshold, x_cols, y_col)
-        st.pyplot(f)
+        plot_distributionsInteractive(data, gpa_threshold, x_cols , stuck, y_col)
+        
     # elif selected_tab == "Gender pie plots":
     #     st.sidebar.header("Settings")
     #     gpa_threshold = st.sidebar.slider("GPA Threshold", 0.0, 4.0, 2.5)
