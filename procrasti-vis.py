@@ -269,8 +269,8 @@ def aleksandra_plot():
 
     fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(ncols=2,nrows=2, figsize=(10, 6)) #, figsize=(10, 10)
     
-    sns.lineplot(ax=ax1, data=df, x="Time", y="GPA", hue="Age Group", style="Age Group")
-    sns.lineplot(ax=ax2, data=df, x="Groups", y="GPA", hue="Age Group",style="Age Group")
+    sns.lineplot(ax=ax1, data=df, x="Time", y="GPA", hue="Age Group", style="Age Group", ci=None)
+    sns.lineplot(ax=ax2, data=df, x="Groups", y="GPA", hue="Age Group",style="Age Group", ci=None)
     ax1.set_title("Time vs GPA")
     ax1.set_xlim(1,5)
     ax1.set_ylim(1,4)
@@ -280,8 +280,8 @@ def aleksandra_plot():
     ax2.set_ylim(1,4)
     ax2.legend(loc=3, prop={'size': 6})
 
-    sns.lineplot(ax=ax3, data=df, x="Friends", y="GPA", hue="Age Group",style="Age Group")
-    sns.lineplot(ax=ax4, data=df, x="Notifications", y="GPA", hue="Age Group",style="Age Group")
+    sns.lineplot(ax=ax3, data=df, x="Friends", y="GPA", hue="Age Group",style="Age Group", ci=None)
+    sns.lineplot(ax=ax4, data=df, x="Notifications", y="GPA", hue="Age Group",style="Age Group", ci=None)
     ax3.set_title("Friends vs GPA")
     ax3.set_xlim(1000,4000)
     ax3.set_ylim(1,4)
