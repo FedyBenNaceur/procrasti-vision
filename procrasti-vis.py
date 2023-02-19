@@ -77,20 +77,22 @@ def display_homepage():
         color: white;
     }
     """
-    # Define the header
-    st.image("images/logo.png", width=700)
+
+
+    # Put an image
+    # st.image("images/logo.png", width=700)
 
     # Use the CSS styles in the app
     st.write(f'<style>{css}</style>', unsafe_allow_html=True)
 
-    # Display the title
+    # High titles
     st.write('<h1>Grade Boosters: What are the Hidden Social Media Factors Impacting Your Academic Success?</h1>', unsafe_allow_html=True)
     st.write('<h2>Screen Time is NOT Everything you need to keep track on!</h1>', unsafe_allow_html=True)
 
     # Create the two-column layout
     col1, col2 = st.columns(2)
 
-    # Left column: random text
+    # [Left] Introduction
     with col1:
         st.write(f'<h3>Introduction</h3>', unsafe_allow_html=True)
         text = """
@@ -103,7 +105,7 @@ def display_homepage():
         st.markdown(text)
         # st.write(f'<p>{text}</p>', unsafe_allow_html=True)
 
-    # Right column: table
+    # [Right] Feature descriptions
     with col2:
         data = {
             'Features': ['Time', 'Groups', 'Friends', 'Notifications'],
