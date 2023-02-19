@@ -1,118 +1,87 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
-import numpy as np
-import seaborn as sns
 import altair as alt
-
-import matplotlib.colors as mcolors
 
 @st.cache
 def load_data(file_path):
     return pd.read_csv(file_path)
 
 
-def plot_distributionsInteractive(data, gpa_threshold, x_cols, stack=True, y_col=None):
-    st.write("Displaying social media usage distributions for students with GPA higher and lower than the threshold")
-    st.markdown("How to read the visualisation : The plots shown below are kernel density plots, the line in the middle indicated the mean value for the corresponding group of people. Plots in green correspond to the group of people having a GPA over a certain threshold that can be modified using the slider in the sidebar. A selector is also available to choose features of the dataset to display.")
+def plot_distributionsInteractive(data, threshold, selected_features):
+    st.markdown("How to read the visualisation : The points on the chart represent students, green points are points whom GPA is above the threshold set by the user, red points are points whom GPA is under the threshold. You can select the features to display on the X axis in the sidebar where you will also be capable of modifying the threshold")
     
-    # Add a new column indicating whether the value is above or below the threshold
-    data_copied = data.copy()
-    data_copied['group'] = ['above' if x > gpa_threshold else 'below' for x in data_copied['GPA']]
-
-
-    # For every selected column
-    for i, x_col in enumerate(x_cols):
-        # Calculate the mean values for each dataset (above/under)
-        above_threshold = data_copied[data_copied['group'] == 'above']
-        below_threshold = data_copied[data_copied['group'] == 'below']
-
-        above_mean = above_threshold[x_col].mean()
-        below_mean = below_threshold[x_col].mean()
+    charts = []
+    for i, feature in enumerate(selected_features):
+        # Create a dataframe for the current feature
+        feature_data = data[[feature, 'GPA']].copy()
         
-        if (stack==False):
-            # Define the density plots using Density Transformers
-            left_density = alt.Chart(above_threshold).transform_density(
-                x_col,
-                as_=[x_col, 'density']
-            ).mark_area(opacity=0.5, color='#98df8a').encode(
-                x=x_col+':Q',
-                y='density:Q',
-                tooltip='density:Q'
-            )
+        # Create a column to distinguish between over and under threshold data points
+        feature_data['Threshold'] = feature_data['GPA'] >= threshold
 
-            right_density = alt.Chart(below_threshold).transform_density(
-                x_col,
-                as_=[x_col, 'density']
-            ).mark_area(opacity=0.5, color='#ffbb78').encode(
-                x=x_col+':Q',
-                y='density:Q',
-                tooltip='density:Q'
-            )
+        # Create a chart showing all data points with color determined by threshold
+        chart = alt.Chart(feature_data).mark_circle().encode(
+            x=alt.X(feature, title=feature, scale=alt.Scale(zero=False)),
+            y=alt.Y('GPA', title='GPA', scale=alt.Scale(zero=False)),
+            color=alt.Color('Threshold:N', scale=alt.Scale(domain=[True, False], range=['green', 'red'])),
+            tooltip=feature_data.columns.tolist()
+        ).properties(
+            width=600,
+            height=600
+        ).interactive()
 
-            # Add vertical lines for the mean values to each density plot
-            left_mean = alt.Chart(pd.DataFrame({'mean': [above_mean]})).mark_rule(color='red').encode(
-                x='mean:Q'
-            )
+        # Add the chart to the list of charts
+        charts.append(chart)
 
-            right_mean = alt.Chart(pd.DataFrame({'mean': [below_mean]})).mark_rule(color='red').encode(
-                x='mean:Q'
-            )
+    # Combine the charts into a vertical grid layout with two columns
+    num_charts = len(charts)
+    num_rows = (num_charts + 1) // 2
+    grid = []
+    for i in range(num_rows):
+        row = charts[i*2:(i+1)*2]
+        grid.append(alt.hconcat(*row))
+    combined_chart = alt.vconcat(*grid)
 
-            # Combine the two density plots and mean lines side-by-side
-            densities = alt.hconcat(
-                left_density + left_mean,
-                right_density + right_mean,
-                spacing=10
-            )
-            # Render the density plots using Streamlit
-            st.altair_chart(densities, use_container_width=True)
-        else:
-            # Define the density plot using Density Transformers
-            density = alt.Chart(data_copied).transform_density(
-                x_col,
-                groupby=['group'],
-                as_=[x_col, 'density']
-            ).mark_area(opacity=0.5).encode(
-                x=alt.X(x_col+':Q', scale=alt.Scale(zero=False, nice=False)),
-                y=alt.Y('density:Q', scale=alt.Scale(zero=False, nice=False)),
-                color=alt.Color('group:N', scale=alt.Scale(domain=['above', 'below'], range=['#98df8a', '#ffbb78'])),
-                tooltip='density:Q'
-            )
+    # Apply the 'fivethirtyeight' theme
+    alt.themes.enable('fivethirtyeight')
 
-            # Add vertical lines for the mean values to the density plot
-            above_mean_line = alt.Chart(pd.DataFrame({'mean': [above_mean], 'group': ['above']})).mark_rule(color='red').encode(
-                x=alt.X('mean:Q'),
-                color=alt.Color('group:N', scale=alt.Scale(domain=['above', 'below'], range=['#98df8a', '#ffbb78'])),
-            )
+    container = st.container()
 
-            below_mean_line = alt.Chart(pd.DataFrame({'mean': [below_mean], 'group': ['below']})).mark_rule(color='red').encode(
-                x=alt.X('mean:Q'),
-                color=alt.Color('group:N', scale=alt.Scale(domain=['above', 'below'], range=['#98df8a', '#ffbb78'])),
-            )
 
-            # Combine the density plot and mean lines into a single plot
-            plot = (density + above_mean_line + below_mean_line).properties(
-                width=300,
-                height=400,
-                title='Density plot of col'
-            )
-            # Render the plot using Streamlit
-            st.altair_chart(plot, use_container_width=True) 
+    # Display the combined chart
+
+    container.altair_chart(combined_chart, use_container_width=True)
+
+    col1, col2 = container.columns(2)
+    col1.write('**Students over the GPA threshold**')
+    col1.dataframe(data[data['GPA'] >= threshold])
+    col2.write('**Students under the GPA threshold**')
+    col2.dataframe(data[data['GPA'] < threshold])
+
+    footer_container = st.container()
+
+    # Add CSS to the footer to make it fixed to the bottom right corner
+    st.write(
+        '<style>.footer {position: fixed; left: auto; right: 0; bottom: 0; width: 100%; text-align: right; background-color: lightgray;}</style>',
+        unsafe_allow_html=True
+    )
+
+    # Apply the 'footer' class to the footer container
+    footer_container.markdown(
+        '<div class="footer" style="color: black;">GPA : GRADE POINT AVERAGE, grading system used in some anglophone countries ex : USA, Ghana ..  </div>',
+        unsafe_allow_html=True
+    ) 
+    
 def main():
-    st.set_page_config(page_title="Distributions By Threshold",
+    st.set_page_config(page_title ="Differences between students with high and low grades",
                   page_icon="📈",
                   layout="wide")
     data = load_data(r'SM_Survey_UPSA-2020.csv')  
-    # Use the native Altair theme.
-    st.markdown("## Distribution according to given threshold")
+    feature_columns = list(data.columns)
     st.sidebar.header("Settings")
-    gpa_threshold = st.sidebar.slider("GPA Threshold", 0.0, 4.0, 2.5)
-    stack = st.checkbox("Stack Plots!", value=False, key="switch")
+    selected_features = st.sidebar.multiselect('Select features to display', feature_columns, default=['Time', 'Groups'])
+    threshold = st.sidebar.slider('GPA threshold', min_value=data['GPA'].min(), max_value=data['GPA'].max(), value=2.0, step=0.1)
 
-    x_cols = st.sidebar.multiselect("X Axes", data.columns, default=["Time", "Friends"])
-    y_col = None
-    plot_distributionsInteractive(data, gpa_threshold, x_cols , stack, y_col)
+    plot_distributionsInteractive(data, threshold, selected_features)
         
 if __name__ == '__main__':
     main()

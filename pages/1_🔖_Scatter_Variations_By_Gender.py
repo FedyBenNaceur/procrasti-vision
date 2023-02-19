@@ -99,7 +99,6 @@ def plot_scatter(data):
         # Plot charts
         st.altair_chart(circles + lines_men + lines_women + gpa, theme="streamlit", use_container_width=True)
 def main():
-    # Set the background color to a light gray
     st.set_page_config(page_title="Scatter Variations By Gender",
                   page_icon="🔖",
                   layout="wide")
