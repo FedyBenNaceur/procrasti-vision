@@ -75,6 +75,7 @@ def main():
     st.set_page_config(page_title ="Differences between students with high and low grades",
                   page_icon="📈",
                   layout="wide")
+    st.markdown("## Differences between students with high and low grades")
     data = load_data(r'SM_Survey_UPSA-2020.csv')  
     feature_columns = list(data.columns)
     st.sidebar.header("Settings")
