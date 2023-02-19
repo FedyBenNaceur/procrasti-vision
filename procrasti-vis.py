@@ -115,7 +115,7 @@ def display_homepage():
         st.write(f'<h3>Dataset Description</h3>', unsafe_allow_html=True)
         st.table(df)
 
-    st.write(f'<h2>Target Audiance</h2><center>Students</center>', unsafe_allow_html=True)
+    st.write(f'<h2>Target Audience</h2><center>Students</center>', unsafe_allow_html=True)
 
 def main():
     # Set the background color to a light gray
