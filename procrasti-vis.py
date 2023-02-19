@@ -71,7 +71,7 @@ def display_homepage():
     }
 
     th {
-        background-color: #F06449;
+        background-color: #E8EAFF;
         font-size: 30px;
         text-align: center;
         color: white;
@@ -115,11 +115,11 @@ def display_homepage():
         st.write(f'<h3>Dataset Description</h3>', unsafe_allow_html=True)
         st.table(df)
 
-    st.write(f'<h2>Target Audience</h2><center>Students</center>', unsafe_allow_html=True)
+    st.write(f'<h2>Target Audience</h2><center><h3>Students</h3></center>', unsafe_allow_html=True)
 
 def main():
     # Set the background color to a light gray
-    st.set_page_config(page_title="Hello",
+    st.set_page_config(page_title="Homepage",
                   page_icon="👋🏻",
                   layout="wide")
     data = load_data(r'SM_Survey_UPSA-2020.csv')

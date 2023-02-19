@@ -42,7 +42,7 @@ def plot_distributionsInteractive(data, threshold, selected_features):
     combined_chart = alt.vconcat(*grid)
 
     # Apply the 'fivethirtyeight' theme
-    alt.themes.enable('fivethirtyeight')
+    # alt.themes.enable('fivethirtyeight')
 
     container = st.container()
 
