@@ -4,12 +4,10 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
-def load_data(file_path):
-    return pd.read_csv(file_path)
 
 
-def lineplot(data):
-    df = data.copy()
+def lineplot():
+    df = pd.read_csv('SM_Survey_UPSA-2020_clean.csv')
 
     st.markdown("## Relation between social media usage and grades by Age groups \n - How to read the visualization: The visualization represents the grade point average (GPA) of students according to 3 age groups and social media usage metrics. We can see what is the mostly negative correlations between the chosen metric and the GPA of students for all groups.")   ## Main Title
         ##############################
@@ -50,8 +48,8 @@ def main():
     st.set_page_config(page_title="Line plots by Age groups",
                   page_icon="⌛",
                   layout="wide")
-    data = load_data(r'SM_Survey_UPSA-2020_clean.csv')        
-    lineplot(data)
+   
+    lineplot()
 
         
 if __name__ == '__main__':
