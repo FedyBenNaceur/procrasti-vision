@@ -19,6 +19,7 @@ def plot_scatter(data):
 
         # Names of variables we will use
         x_axis = 'Mean'
+        st.sidebar.header("Settings")
         y_axis = st.sidebar.selectbox("Y-Axis", measurements, index=measurements.index('Time'))
 
         # Gender colors
