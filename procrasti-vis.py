@@ -1,15 +1,5 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
-import numpy as np
-import seaborn as sns
-import altair as alt
-
-import matplotlib.colors as mcolors
-
-@st.cache
-def load_data(file_path):
-    return pd.read_csv(file_path)
 
 
 def display_homepage():
@@ -122,7 +112,6 @@ def main():
     st.set_page_config(page_title="Homepage",
                   page_icon="👋🏻",
                   layout="wide")
-    data = load_data(r'SM_Survey_UPSA-2020.csv')
 
     display_homepage()
   

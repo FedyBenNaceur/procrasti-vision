@@ -76,7 +76,7 @@ def main():
                   page_icon="📈",
                   layout="wide")
     st.markdown("## Differences between students with high and low grades")
-    data = load_data(r'SM_Survey_UPSA-2020.csv')  
+    data = load_data(r'data/SM_Survey_UPSA-2020.csv')  
     feature_columns = list(data.columns)
     st.sidebar.header("Settings")
     selected_features = st.sidebar.multiselect('Select features to display', feature_columns, default=['Time', 'Groups'])

@@ -1,8 +1,6 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
 import numpy as np
-import seaborn as sns
 import altair as alt
 
 def load_data(file_path):
@@ -102,7 +100,7 @@ def main():
     st.set_page_config(page_title="Scatter Variations By Gender",
                   page_icon="🔖",
                   layout="wide")
-    data = load_data(r'SM_Survey_UPSA-2020.csv')        
+    data = load_data(r'data/SM_Survey_UPSA-2020.csv')        
     plot_scatter(data)
 
         
