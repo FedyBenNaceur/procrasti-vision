@@ -77,7 +77,7 @@ def display_homepage():
 
     # High titles
     st.write('<h1>Grade Boosters: What are the Hidden Social Media Factors Impacting Your Academic Success?</h1>', unsafe_allow_html=True)
-    st.write('<h2>Screen Time is NOT Everything you need to keep track on!</h1>', unsafe_allow_html=True)
+    st.write('<h2>Screen Time is NOT Everything you need to keep track of!</h1>', unsafe_allow_html=True)
 
     # Create the two-column layout
     col1, col2 = st.columns(2)
@@ -90,7 +90,7 @@ def display_homepage():
 
         The data was collected from an online survey where a random sample of $623$ students from the ***University of Professional studies,*** *Ghana in 2021*.
 
-        The visualisations show the relationship between students academic performance expressed via `GPA` (grade point average) and **4 related social media usage metrics** (see table on the right).
+        The visualisations show the relationship between students academic performance expressed via **GPA** (grade point average) and **4 related social media usage metrics** (see table on the right).
         """
         st.markdown(text)
         # st.write(f'<p>{text}</p>', unsafe_allow_html=True)
@@ -99,7 +99,7 @@ def display_homepage():
     with col2:
         data = {
             'Features': ['Time', 'Groups', 'Friends', 'Notifications'],
-            'Description': ['refers to average number of hours a student spends daily on social media', 'represents to the number of social media groups a student belongs to', 'is the number of social media friends a student has', 'the average number of times each student checks his phone notifications per day'],
+            'Description': ['refers to average number of hours a student spends daily on social media', 'represents the number of social media groups a student belongs to', 'is the number of social media friends a student has', 'the average number of times each student checks his phone notifications per day'],
         }
         df = pd.DataFrame(data)
         st.write(f'<h3>Dataset Description</h3>', unsafe_allow_html=True)
