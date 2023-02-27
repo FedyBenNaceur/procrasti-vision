@@ -17,7 +17,6 @@ def plot_distributionsInteractive(data, threshold, selected_features):
         
         # Create a column to distinguish between over and under threshold data points
         feature_data['Threshold'] = feature_data['GPA'] >= threshold
-
         # Create a chart showing all data points with color determined by threshold
         chart = alt.Chart(feature_data).mark_circle().encode(
             x=alt.X(feature, title=feature, scale=alt.Scale(zero=False)),
@@ -77,6 +76,7 @@ def main():
                   layout="wide")
     data = load_data(r'SM_Survey_UPSA-2020.csv')  
     feature_columns = list(data.columns)
+    feature_columns.remove('GPA')
     st.sidebar.header("Settings")
     selected_features = st.sidebar.multiselect('Select features to display', feature_columns, default=['Time', 'Groups'])
     threshold = st.sidebar.slider('GPA threshold', min_value=data['GPA'].min(), max_value=data['GPA'].max(), value=2.0, step=0.1)
