@@ -19,8 +19,8 @@ def plot_distributionsInteractive(data, threshold, selected_features):
         feature_data['Threshold'] = feature_data['GPA'] >= threshold
         # Create a chart showing all data points with color determined by threshold
         chart = alt.Chart(feature_data).mark_circle().encode(
-            x=alt.X(feature, title=feature, scale=alt.Scale(zero=False)),
-            y=alt.Y('GPA', title='GPA', scale=alt.Scale(zero=False)),
+            x=alt.X(feature, title=feature, scale=alt.Scale(zero=False, padding=1)),
+            y=alt.Y('GPA', title='GPA', scale=alt.Scale(zero=False, padding=1)),
             color=alt.Color('Threshold:N', scale=alt.Scale(domain=[True, False], range=['green', 'red'])),
             tooltip=feature_data.columns.tolist()
         ).properties(
@@ -41,7 +41,7 @@ def plot_distributionsInteractive(data, threshold, selected_features):
     combined_chart = alt.vconcat(*grid)
 
     # Apply the 'fivethirtyeight' theme
-    alt.themes.enable('fivethirtyeight')
+    # alt.themes.enable('fivethirtyeight')
 
     container = st.container()
 
@@ -74,7 +74,8 @@ def main():
     st.set_page_config(page_title ="Differences between students with high and low grades",
                   page_icon="📈",
                   layout="wide")
-    data = load_data(r'SM_Survey_UPSA-2020.csv')  
+    st.markdown("## Differences between students with high and low grades")
+    data = load_data(r'data/SM_Survey_UPSA-2020.csv')  
     feature_columns = list(data.columns)
     feature_columns.remove('GPA')
     st.sidebar.header("Settings")
